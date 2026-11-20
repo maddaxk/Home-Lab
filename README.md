@@ -1,8 +1,8 @@
-# Acme Corp Active Directory Home Lab
+# Acme Corp Home Lab
 
-A small, self-hosted enterprise-style environment built to learn Microsoft Active Directory administration and security monitoring. The lab models a fictional company, **Acme**, with a Windows Server domain controller, a domain-joined Windows 11 client, and a Wazuh SIEM collecting logs.
+A small, self-hosted enterprise-style environment built to learn Microsoft Active Directory administration and security monitoring. The lab models a fictional company, Acme, with a Windows Server domain controller, a domain-joined Windows 11 client, and a Wazuh SIEM collecting logs.
 
-**Goal:** build practical skills for entry-level IT and cybersecurity roles: identity management, Group Policy, access control, and detection of common AD attacks.
+**Goal:** build practical skills for IT and cybersecurity roles: identity management, Group Policy, access control, threat detection, and system hardening.
 
 
 
@@ -71,37 +71,25 @@ Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Mana
 - [ ] Department file shares with AGDLP permissions
 - [ ] Additional GPOs
 - [ ] Wazuh agents on the DC and client, with advanced audit policy enabled
-- [ ] Attack simulation and detection write-ups (see Roadmap)
+- [ ] Attack simulation and detection
 
 
 
-## Roadmap
+## Roadmap/To-do
 
 **Administration**
 - Configure the domain password policy and account lockout in the Default Domain Policy
-- Create a Fine-Grained Password Policy for `IT-Admins`
+- Create an additional Password Policy for `IT-Admins`
 - Build department file shares
-- Practice help desk tasks: password resets, unlocks, account disable, group changes
 
 **Security monitoring**
-- Deploy the Wazuh agent (and Sysmon) to the DC and client
-- Enable advanced audit policies so key events are logged
-- Build detections around relevant Windows event IDs, including 4624/4625 (logon success/failure), 4720 (account created), and 4768/4769 (Kerberos tickets)
-- Simulate common attacks in the lab (password spraying, Kerberoasting) and document what the logs look like
+- Deploy the Wazuh agent to the DC and client
+- Configure audit policies so important events are logged
+- Build detections around relevant Windows event IDs, including logons, account creation/modification, workstation activity, etc
+- Simulate common attacks in the lab, document logs, further system hardening
 
-**Hybrid (future)**
-- Sync the domain to Microsoft Entra ID in an Azure lab using Entra Connect
-
-
-
-## Lessons learned
-
-_Add entries as the lab progresses. Each should cover the problem, how it was diagnosed, and the fix._
-
-| Problem | Cause | Fix |
-|---|---|---|
-| | | |
-
+**Future**
+- Sync the domain to Microsoft Entra ID in an Azure lab
 
 
 ## Note
