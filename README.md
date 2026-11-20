@@ -4,7 +4,12 @@ A small, self-hosted enterprise-style environment built to learn Microsoft Activ
 
 **Goal:** build practical skills for entry-level IT and cybersecurity roles: identity management, Group Policy, access control, and detection of common AD attacks.
 
----
+
+
+## Tools and skills practiced
+
+Proxmox VE, Windows Server 2022, Active Directory Domain Services, DNS, Group Policy, VMware Workstation, SIEM setup, SIEM monitoring, Ubuntu Server, virtualization and networking
+
 
 ## Architecture
 
@@ -23,7 +28,7 @@ A small, self-hosted enterprise-style environment built to learn Microsoft Activ
 - Windows VMs on Proxmox use VirtIO drivers and the QEMU guest agent.
 - Snapshots are taken before each major change (before promotion, after OU build, and so on).
 
----
+
 
 ## Active Directory design
 
@@ -42,43 +47,40 @@ corp.acme.internal
 │   ├── Servers
 │   ├── Groups
 │   └── Service Accounts
-├── Domain Controllers   (default)
-├── Computers            (default container)
-└── Users                (default container)
 ```
 
-Custom OUs hold everything Acme-related. The default containers are left untouched, since Group Policy cannot be linked to plain containers and the defaults are reserved for built-in objects.
+Custom OUs hold everything Acme-related. The default containers are left untouched, since Group Policy cannot be linked to plain containers.
 
 ### Security groups
 
-Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Management-Staff`) and `IT-Admins` live in `Acme\Groups`. All are **Global / Security**. Permissions are assigned to groups rather than individual users, following the AGDLP model (Accounts → Global groups → Domain Local groups → Permissions).
+Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Management-Staff`) and `IT-Admins` live in `Acme\Groups`. All are Global / Security. Permissions are assigned to groups rather than individual users for RBAC.
 
----
+
 
 ## Build progress
 
-- [x] Proxmox host running, Wazuh VM deployed
-- [x] Windows Server 2022 VM installed with VirtIO drivers and guest agent
+- [x] Proxmox host running
+- [x] Wazuh Server VM deployed
+- [x] Windows Server 2022 VM deployed as DC
 - [x] Static IP configured on the DC
 - [x] AD DS installed and server promoted to a new forest
 - [x] OU structure created
 - [x] Users and department groups created, with group memberships
-- [ ] Windows 11 client joined to the domain
+- [x] Windows 11 client joined to the domain
 - [ ] Password and account lockout policy via Group Policy
 - [ ] Department file shares with AGDLP permissions
-- [ ] Additional GPOs (e.g. login banner, drive mappings)
+- [ ] Additional GPOs
 - [ ] Wazuh agents on the DC and client, with advanced audit policy enabled
 - [ ] Attack simulation and detection write-ups (see Roadmap)
 
----
+
 
 ## Roadmap
 
 **Administration**
-- Join the Windows 11 VM to the domain and move it into `Acme\Workstations`
 - Configure the domain password policy and account lockout in the Default Domain Policy
 - Create a Fine-Grained Password Policy for `IT-Admins`
-- Build department file shares using AGDLP
+- Build department file shares
 - Practice help desk tasks: password resets, unlocks, account disable, group changes
 
 **Security monitoring**
@@ -90,7 +92,7 @@ Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Mana
 **Hybrid (future)**
 - Sync the domain to Microsoft Entra ID in an Azure lab using Entra Connect
 
----
+
 
 ## Lessons learned
 
@@ -100,14 +102,8 @@ _Add entries as the lab progresses. Each should cover the problem, how it was di
 |---|---|---|
 | | | |
 
----
 
-## Tools and skills practiced
 
-Proxmox VE · Windows Server 2022 · Active Directory Domain Services · DNS · Group Policy · VMware Workstation · Wazuh · Ubuntu Server · virtualization networking
+## Note
 
----
-
-## Notes
-
-This is a learning environment. Credentials are lab-only, no real personal data is used, and the network is not exposed to the internet.
+This is a learning lab environment. Credentials are lab-only, no real personal data is used, any resemblance to real individuals or organizations is coincidence, and the network is not exposed to the internet.
