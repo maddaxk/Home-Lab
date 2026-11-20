@@ -1,2 +1,113 @@
-# Home-Lab
-Building and maintaining a personal homelab to run services and practice lab environments to learn IT and cybersecurity skills.
+# Acme Corp Active Directory Home Lab
+
+A small, self-hosted enterprise-style environment built to learn Microsoft Active Directory administration and security monitoring. The lab models a fictional company, **Acme**, with a Windows Server domain controller, a domain-joined Windows 11 client, and a Wazuh SIEM collecting logs.
+
+**Goal:** build practical skills for entry-level IT and cybersecurity roles: identity management, Group Policy, access control, and detection of common AD attacks.
+
+---
+
+## Architecture
+
+| Component | Platform | Role |
+|---|---|---|
+| Proxmox VE host | Dell OptiPlex 3070 (i5-8500, 16 GB RAM, NVMe) | Hypervisor for the server-side VMs |
+| `DC01` | Windows Server 2022 Standard (Desktop Experience), Proxmox VM | Domain controller, AD DS, DNS |
+| Wazuh server | Ubuntu Server, Proxmox VM | SIEM / log analysis |
+| Windows 11 Pro client | VMware Workstation, on a laptop | Domain-joined workstation (bridged networking) |
+
+**Domain:** `corp.acme.internal` (the `.internal` TLD is reserved for private networks, so it cannot collide with a real public domain)
+
+**Design choices**
+- Domain is a subdomain of the company name, matching the real-world convention of keeping AD DNS separate from the public site.
+- The DC has a static IP and uses itself as its DNS server.
+- Windows VMs on Proxmox use VirtIO drivers and the QEMU guest agent.
+- Snapshots are taken before each major change (before promotion, after OU build, and so on).
+
+---
+
+## Active Directory design
+
+### Organizational Units
+
+```
+corp.acme.internal
+├── Acme
+│   ├── Users
+│   │   ├── HR
+│   │   ├── IT
+│   │   ├── Finance
+│   │   ├── Sales
+│   │   └── Management
+│   ├── Workstations
+│   ├── Servers
+│   ├── Groups
+│   └── Service Accounts
+├── Domain Controllers   (default)
+├── Computers            (default container)
+└── Users                (default container)
+```
+
+Custom OUs hold everything Acme-related. The default containers are left untouched, since Group Policy cannot be linked to plain containers and the defaults are reserved for built-in objects.
+
+### Security groups
+
+Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Management-Staff`) and `IT-Admins` live in `Acme\Groups`. All are **Global / Security**. Permissions are assigned to groups rather than individual users, following the AGDLP model (Accounts → Global groups → Domain Local groups → Permissions).
+
+---
+
+## Build progress
+
+- [x] Proxmox host running, Wazuh VM deployed
+- [x] Windows Server 2022 VM installed with VirtIO drivers and guest agent
+- [x] Static IP configured on the DC
+- [x] AD DS installed and server promoted to a new forest
+- [x] OU structure created
+- [x] Users and department groups created, with group memberships
+- [ ] Windows 11 client joined to the domain
+- [ ] Password and account lockout policy via Group Policy
+- [ ] Department file shares with AGDLP permissions
+- [ ] Additional GPOs (e.g. login banner, drive mappings)
+- [ ] Wazuh agents on the DC and client, with advanced audit policy enabled
+- [ ] Attack simulation and detection write-ups (see Roadmap)
+
+---
+
+## Roadmap
+
+**Administration**
+- Join the Windows 11 VM to the domain and move it into `Acme\Workstations`
+- Configure the domain password policy and account lockout in the Default Domain Policy
+- Create a Fine-Grained Password Policy for `IT-Admins`
+- Build department file shares using AGDLP
+- Practice help desk tasks: password resets, unlocks, account disable, group changes
+
+**Security monitoring**
+- Deploy the Wazuh agent (and Sysmon) to the DC and client
+- Enable advanced audit policies so key events are logged
+- Build detections around relevant Windows event IDs, including 4624/4625 (logon success/failure), 4720 (account created), and 4768/4769 (Kerberos tickets)
+- Simulate common attacks in the lab (password spraying, Kerberoasting) and document what the logs look like
+
+**Hybrid (future)**
+- Sync the domain to Microsoft Entra ID in an Azure lab using Entra Connect
+
+---
+
+## Lessons learned
+
+_Add entries as the lab progresses. Each should cover the problem, how it was diagnosed, and the fix._
+
+| Problem | Cause | Fix |
+|---|---|---|
+| | | |
+
+---
+
+## Tools and skills practiced
+
+Proxmox VE · Windows Server 2022 · Active Directory Domain Services · DNS · Group Policy · VMware Workstation · Wazuh · Ubuntu Server · virtualization networking
+
+---
+
+## Notes
+
+This is a learning environment. Credentials are lab-only, no real personal data is used, and the network is not exposed to the internet.
