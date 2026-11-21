@@ -16,19 +16,11 @@ Proxmox VE, Windows Server 2022, Active Directory Domain Services, DNS, Group Po
 | Component | Platform | Role |
 |---|---|---|
 | Proxmox VE host | Dell OptiPlex 3070 (i5-8500, 16 GB RAM, NVMe) | Hypervisor for the server-side VMs |
-| `DC01` | Windows Server 2022 Standard (Desktop Experience), Proxmox VM | Domain controller, AD DS, DNS |
-| Wazuh server | Ubuntu Server, Proxmox VM | SIEM / log analysis |
+| Windows Server | Windows Server 2022 Standard (Desktop Experience) as a Proxmox VM | Domain controller, AD DS, DNS |
+| Wazuh Server | Ubuntu Server as a Proxmox VM | SIEM / log analysis |
 | Windows 11 Pro client | VMware Workstation, on a laptop | Domain-joined workstation (bridged networking) |
 
-**Domain:** `corp.acme.internal` (the `.internal` TLD is reserved for private networks, so it cannot collide with a real public domain)
-
-**Design choices**
-- Domain is a subdomain of the company name, matching the real-world convention of keeping AD DNS separate from the public site.
-- The DC has a static IP and uses itself as its DNS server.
-- Windows VMs on Proxmox use VirtIO drivers and the QEMU guest agent.
-- Snapshots are taken before each major change (before promotion, after OU build, and so on).
-
-
+**Domain:** `corp.acme.internal`
 
 ## Active Directory design
 
@@ -49,12 +41,11 @@ corp.acme.internal
 │   └── Service Accounts
 ```
 
-Custom OUs hold everything Acme-related. The default containers are left untouched, since Group Policy cannot be linked to plain containers.
+Custom OUs hold everything Acme-related.
 
 ### Security groups
 
-Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Management-Staff`) and `IT-Admins` live in `Acme\Groups`. All are Global / Security. Permissions are assigned to groups rather than individual users for RBAC.
-
+Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Management-Staff`) and `IT-Admins` live in `Acme\Groups`. Permissions are assigned to groups rather than individual users for RBAC.
 
 
 ## Build progress
@@ -67,9 +58,8 @@ Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Mana
 - [x] OU structure created
 - [x] Users and department groups created, with group memberships
 - [x] Windows 11 client joined to the domain
-- [ ] Password and account lockout policy via Group Policy
+- [ ] Group Policy additions (passwords, lockouts, etc)
 - [ ] Department file shares with AGDLP permissions
-- [ ] Additional GPOs
 - [ ] Wazuh agents on the DC and client, with advanced audit policy enabled
 - [ ] Attack simulation and detection
 
@@ -78,18 +68,17 @@ Department groups (`HR-Staff`, `IT-Staff`, `Finance-Staff`, `Sales-Staff`, `Mana
 ## Roadmap/To-do
 
 **Administration**
-- Configure the domain password policy and account lockout in the Default Domain Policy
-- Create an additional Password Policy for `IT-Admins`
-- Build department file shares
+- Configure the domain password policy and account lockout in the Default Domain Policy and a separate policy for `IT-Admins`
+- Department file shares
 
 **Security monitoring**
-- Deploy the Wazuh agent to the DC and client
-- Configure audit policies so important events are logged
-- Build detections around relevant Windows event IDs, including logons, account creation/modification, workstation activity, etc
+- Deploy a Wazuh agent to the DC and client
+- Make audit policies so important events are logged
+- Build detections with Windows event IDs, including logons, account creation/modification, workstation activity, etc
 - Simulate common attacks in the lab, document logs, further system hardening
 
-**Future**
-- Sync the domain to Microsoft Entra ID in an Azure lab
+**Future, maybe**
+- Sync up the domain to Entra ID in an Azure lab
 
 
 ## Note
